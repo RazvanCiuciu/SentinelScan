@@ -39,11 +39,11 @@ namespace SentinelScan.Api.Services
         }
 
 
-        public async Task<List<ScanReport>> ExecuteBachAsync(FileToProcess file)
+        public async Task<List<ScanReport>> ExecuteBachAsync(List<FileToProcess> files)
         {
             List<Task<ScanReport>> scanTasks = new List<Task<ScanReport>>();
 
-            foreach (var scanner in _scanners)
+            foreach (var file in files)
             {
                 Task<ScanReport> task = ScanSingleFileAsync(file);
                 scanTasks.Add(task);
@@ -58,7 +58,6 @@ namespace SentinelScan.Api.Services
             }
 
             return finalResults;
-
 
         }
 
