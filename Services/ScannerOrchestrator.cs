@@ -5,58 +5,64 @@ namespace SentinelScan.Api.Services
 {
     public class ScannerOrchestrator
     {
-        public IEnumerable<IScanner> _scanners;
+        public List<IScanner> _scanners;
 
-        public ScannerOrchestrator(IEnumerable<IScanner> scanners)
+        public ScannerOrchestrator(List<IScanner> scanners)
         {
             _scanners = scanners;
         }
-        
-        private ScanReport GenerateReport(FileToProcess file)
+
+        private async Task<ScanReport> ScanSingleFileAsync(FileToProcess file)
         {
             ScanReport report = new ScanReport();
-            report.IsSafe = true;
             report.Name = file.Name;
             report.ScanTime = DateTime.Now;
+            report.IsSafe = true;
 
-            foreach (var scanners in _scanners)
+            List<Task<bool>> scannerTasks = new List<Task<bool>>();
+            foreach (var scanner in _scanners)
             {
-                if(scanners.Scanner(file) is false)
-                {
-                    report.IsSafe = false;
-                    report.FoundIssues.Add($"{file.Name} has failled the {_scanners.GetType()}");
-                }
-                
+                scannerTasks.Add(scanner.ScanAsync(file));
             }
+
+            bool[] results = await Task.WhenAll(scannerTasks);
+
+            foreach (bool result in results)
+
+                if (result == false)
+                {
+                    report.IsSafe = result;
+                    string scannerName = result.GetType().Name;
+                    report.FoundIssues.Add($"Security check failled at {scannerName}\n");
+                }
             return report;
         }
 
 
-        //task e ca un quest pe care il dau compilatorul pe care poate sa il faca doar ca are resursele necesare sau indeplineste anumita conditie
-        //basicly eu ii dau lui task ul de a citii lista cu Scan reports
-        public async Task<List<ScanReport>> ExecuteBatchAsync(List<FileToProcess> files)
+        public async Task<List<ScanReport>> ExecuteBachAsync(FileToProcess file)
         {
-            //aici vac o lista cu taskuri care ma ajuta sa fac paralelism
             List<Task<ScanReport>> scanTasks = new List<Task<ScanReport>>();
 
-            foreach (var file in files) 
-            { 
-                //aici creez lista cu taskuri
-                Task <ScanReport> task = Task.Run(() => GenerateReport(file));
+            foreach (var scanner in _scanners)
+            {
+                Task<ScanReport> task = ScanSingleFileAsync(file);
                 scanTasks.Add(task);
             }
-            //aici fac programul sa astepte sa se termine toate takurile
-            ScanReport[] arrayResults = await Task.WhenAll(scanTasks);
 
-            List<ScanReport> finalReports = new List<ScanReport>();
-            foreach (var report in arrayResults)
+            ScanReport[] resultsArray = await Task.WhenAll(scanTasks);
+
+            List<ScanReport> finalResults = new List<ScanReport>();
+            foreach (ScanReport scanReport in resultsArray)
             {
-                finalReports.Add(report);
+                finalResults.Add(scanReport);
             }
 
+            return finalResults;
 
-            //aici desi returnez o lista de scan reports, programul imi trimite mai departe sub forma de task
-            return finalReports;
+
         }
+
     }
+
 }
+

@@ -7,5 +7,7 @@
         public int SizeInMB {  get; set; }
         public bool IsEncrypted { get; set; }
 
+        public string Content { get; set; }
+
     }
 }

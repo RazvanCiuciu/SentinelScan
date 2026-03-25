@@ -5,11 +5,15 @@ namespace SentinelScan.Api.Services
 {
     public class SizeScanner : IScanner
     {
-        public bool Scanner(FileToProcess file)
+        public async Task<bool> ScanAsync(FileToProcess file)
         {
-            if (file.SizeInMB > 100)
-                return false;
-            return true;
+            return await Task.Run(() =>
+            {
+                if (file.SizeInMB > 10 || file.SizeInMB <= 0)
+                    return false;
+                return true;
+            });
         }
     }
 }
+    

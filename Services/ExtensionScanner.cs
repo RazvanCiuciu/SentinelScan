@@ -5,11 +5,14 @@ namespace SentinelScan.Api.Services
 {
     public class ExtensionScanner :IScanner
     {
-        public bool Scanner(FileToProcess file)
+        public async Task<bool> ScanAsync(FileToProcess file)
         {
-            if (file.Extension == ".exe" || file.Extension == ".bat" || file.Extension == ".vbs")
+            return await Task.Run(() =>
+            {
+                if (file.Extension == ".md" || file.Extension == ".json" || file.Extension == ".yaml" || file.Extension == ".yml" || file.Extension == ".txt" || file.Extension == ".py")
+                    return true;
                 return false;
-            return true;
+            });
         }
     }
 }

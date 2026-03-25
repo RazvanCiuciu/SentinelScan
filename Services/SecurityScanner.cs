@@ -5,9 +5,13 @@ namespace SentinelScan.Api.Services
 {
     public class SecurityScanner : IScanner
     {
-        public bool Scanner(FileToProcess file)
+        public async Task<bool> ScanAsync(FileToProcess file)
         {
-            return !file.IsEncrypted;
+            return await Task.Run(() => 
+            { if (file.IsEncrypted)
+                    return false;
+                return true;
+            });
         }
     }
 }
