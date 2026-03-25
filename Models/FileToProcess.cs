@@ -4,10 +4,9 @@
     {
         public string Name { get; set; }
         public string Extension { get; set; }
-        public int SizeInMB {  get; set; }
+        public long SizeInBytes {  get; set; }
         public bool IsEncrypted { get; set; }
-
-        public string Content { get; set; }
+        public byte[] Content { get; set; } 
 
     }
 }
