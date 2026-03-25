@@ -29,7 +29,7 @@ namespace SentinelScan.Api.Services
 
             foreach (bool result in results)
 
-                if (result == false)
+                if (!result)
                 {
                     report.IsSafe = result;
                     string scannerName = result.GetType().Name;
