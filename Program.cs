@@ -7,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IScanner, SizeScanner>();
 builder.Services.AddScoped<IScanner, SecurityScanner>();
 builder.Services.AddScoped<IScanner, ExtensionScanner>();
+builder.Services.AddScoped<IScanner, PromptInjectionScanner>();
 
 //Register the orchestrator
 builder.Services.AddScoped<ScannerOrchestrator>();
