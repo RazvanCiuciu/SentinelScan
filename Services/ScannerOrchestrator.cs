@@ -5,11 +5,11 @@ namespace SentinelScan.Api.Services
 {
     public class ScannerOrchestrator
     {
-        public List<IScanner> _scanners;
+        private readonly IScanner[] _scanners;
 
-        public ScannerOrchestrator(List<IScanner> scanners)
+        public ScannerOrchestrator(IEnumerable<IScanner> scanners)
         {
-            _scanners = scanners;
+            _scanners = scanners.ToArray();
         }
 
         private async Task<ScanReport> ScanSingleFileAsync(FileToProcess file)
@@ -27,19 +27,20 @@ namespace SentinelScan.Api.Services
 
             bool[] results = await Task.WhenAll(scannerTasks);
 
-            foreach (bool result in results)
-
-                if (!result)
+            for (int i = 0; i < results.Length; i++)
+            {
+                if (!results[i])
                 {
-                    report.IsSafe = result;
-                    string scannerName = result.GetType().Name;
+                    report.IsSafe = false;
+                    string scannerName = _scanners[i].GetType().Name;
                     report.FoundIssues.Add($"Security check failled at {scannerName}\n");
                 }
+            }
             return report;
         }
 
 
-        public async Task<List<ScanReport>> ExecuteBachAsync(List<FileToProcess> files)
+        public async Task<List<ScanReport>> ExecuteBatchAsync(List<FileToProcess> files)
         {
             List<Task<ScanReport>> scanTasks = new List<Task<ScanReport>>();
 
@@ -58,7 +59,6 @@ namespace SentinelScan.Api.Services
             }
 
             return finalResults;
-
         }
 
     }
