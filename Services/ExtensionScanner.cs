@@ -7,7 +7,7 @@ namespace SentinelScan.Api.Services
     {
         private readonly HashSet<string> _allowedExtensions = new()
         {
-            ".md", ".json", ".txt", ".yaml", ".py"
+            ".md", ".json", ".txt", ".yaml",".yml",".py"
         };
         public async Task<bool> ScanAsync(FileToProcess file)
         {
