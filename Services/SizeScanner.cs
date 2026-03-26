@@ -10,7 +10,7 @@ namespace SentinelScan.Api.Services
         {
             return await Task.Run(() =>
             {
-                if (file.SizeInBytes > maxAllowedSize || file.SizeInBytes <= 0)
+                if (file.Size > maxAllowedSize || file.Size <= 0)
                     return false;
                 return true;
             });
