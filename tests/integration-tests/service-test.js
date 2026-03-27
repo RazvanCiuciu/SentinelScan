@@ -3,7 +3,7 @@ import {check} from 'k6';
 
 export default function()
 {
-    let URL = "https://localhost:7142/api/scanner/scan";
+    const URL = "https://localhost:7142/api/scanner/scan";
 
     const testJson = [
         {
